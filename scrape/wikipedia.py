@@ -20,7 +20,7 @@ class Wikipedia(bs4.BeautifulSoup):  # type: ignore
         for a in self.find_all("a"):
             href = a.get("href")
             if href and href.startswith("/wiki/") and ":" not in href:
-                yield href
+                yield re.sub("#.*", "", href)
 
     def words(self) -> Iterator[str]:
         """
