@@ -18,6 +18,7 @@ class Scrape:
         self.pages = pages
         self.threads = threads
 
+        self.scraped = []  # type: List[str]
         self.queue = queue.Queue()  # type: queue.Queue
         self.lock = threading.Lock()
 
@@ -53,13 +54,14 @@ class Scrape:
                     for link in scrape.links():
                         f.write("{}\n".format(link))
                         with self.lock:
-                            if self.pages > 0:
+                            if self.pages > 0 and link not in self.scraped:
                                 self.queue.put(self.build_url(
                                     components.scheme,
                                     components.netloc,
                                     link
                                 ))
                                 self.pages -= 1
+                                self.scraped.append(link)
 
                 words = self.build_path("Words", components.path)
                 with open(words, "w") as f:
